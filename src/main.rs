@@ -1,3 +1,5 @@
+pub mod mb;
+
 use clap::Parser;
 use discid::DiscId;
 
@@ -16,21 +18,9 @@ fn main() -> anyhow::Result<()> {
     println!("Disc ID: {:?}", disc_id);
     println!("TOC: {:?}", toc);
 
-    const USER_AGENT: &str = concat!(
-        env!("CARGO_PKG_NAME"),
-        "/",
-        env!("CARGO_PKG_VERSION"),
-        " ( ",
-        env!("CARGO_PKG_HOMEPAGE"),
-        " )",
-    );
-    let response = ureq::get(&format!("https://musicbrainz.org/ws/2/discid/{}", disc_id))
-        .set("User-Agent", USER_AGENT)
-        .set("Accept", "application/json")
-        .call()?
-        .into_string()?;
-
-    println!("{}", response);
+    let mb_client = mb::Client::new();
+    let mb_info = mb::DiscId::lookup(&mb_client, &disc_id)?;
+    println!("{:#?}", mb_info);
 
     Ok(())
 }
