@@ -77,6 +77,15 @@ pub struct Release {
     pub title: String,
 }
 
+impl Release {
+    pub(crate) fn artist_string(&self) -> String {
+        self.artist_credit
+            .iter()
+            .flat_map(|credit| [credit.name.as_str(), credit.joinphrase.as_str()])
+            .collect()
+    }
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct ArtistCredit {

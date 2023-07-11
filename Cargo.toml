@@ -2,15 +2,21 @@
 name = "ripoff"
 version = "0.1.0"
 edition = "2021"
-homepage = "https://github.com/agausmann/ripoff"
-repository = "https://github.com/agausmann/ripoff"
+homepage = "https://sr.ht/~agausmann/ripoff"
+repository = "https://git.sr.ht/~agausmann/ripoff"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+aho-corasick = "1.0.2"
 anyhow = "1.0.71"
+cdparanoia = "0.1.0"
 clap = { version = "4.3.5", features = ["derive"] }
+dialoguer = "0.10.4"
 discid = "0.5.0"
+flac-bound = "0.3.0"
+indicatif = "0.17.5"
+metaflac = "0.2.5"
 serde = { version = "1.0.164", features = ["derive"] }
 serde_json = "1.0.99"
 ureq = { version = "2.7.1", features = ["json"] }
