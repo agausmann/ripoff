@@ -145,7 +145,16 @@ pub struct Media {
     pub title: String,
     pub track_count: u32,
     pub track_offset: u32,
+    pub discs: Vec<Disc>,
     pub tracks: Vec<Track>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub struct Disc {
+    pub offset_count: u32,
+    pub id: String,
+    pub offsets: Vec<u32>,
 }
 
 #[derive(Debug, Deserialize)]
