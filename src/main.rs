@@ -8,7 +8,7 @@ use std::{
 
 use aho_corasick::AhoCorasick;
 use anyhow::{anyhow, bail, Context};
-use cdparanoia::{CdromDrive, CdromParanoia, CD_FRAMEWORDS};
+use cdparanoia::{CdromDrive, CdromParanoia, ParanoiaMode, CD_FRAMEWORDS};
 use clap::Parser;
 use dialoguer::{theme::ColorfulTheme, Confirm, Select};
 use discid::DiscId;
@@ -139,6 +139,7 @@ fn main() -> anyhow::Result<()> {
     cdrom.set_verbosity(cdparanoia::Verbosity::LogIt, cdparanoia::Verbosity::LogIt);
     cdrom.open().context("failed to open CD drive")?;
     let mut paranoia = CdromParanoia::init(cdrom);
+    paranoia.set_mode(ParanoiaMode::FULL);
 
     let track_count = paranoia.drive().tracks()?;
     for track_num in 1..=track_count {
