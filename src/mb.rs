@@ -1,4 +1,19 @@
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
+
+fn or_number<'de, D: Deserializer<'de>>(de: D) -> Result<Option<String>, D::Error> {
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum StringOrNumber {
+        String(String),
+        Number(u64),
+    }
+    let v = Option::<StringOrNumber>::deserialize(de)?;
+    match v {
+        Some(StringOrNumber::String(x)) => Ok(Some(x)),
+        Some(StringOrNumber::Number(x)) => Ok(Some(x.to_string())),
+        None => Ok(None),
+    }
+}
 
 const DEFAULT_ROOT_URL: &str = "https://musicbrainz.org/ws/2";
 const DEFAULT_USER_AGENT: &str = concat!(
@@ -130,6 +145,7 @@ pub struct LabelInfo {
 pub struct Label {
     pub disambiguation: String,
     pub id: String,
+    #[serde(deserialize_with = "or_number")]
     pub label_code: Option<String>,
     pub name: String,
     pub sort_name: String,
