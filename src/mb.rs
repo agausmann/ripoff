@@ -88,8 +88,8 @@ pub struct Release {
     pub id: String,
     pub label_info: Vec<LabelInfo>,
     pub media: Vec<Media>,
-    pub packaging: String,
-    pub packaging_id: String,
+    pub packaging: Option<String>,
+    pub packaging_id: Option<String>,
     pub quality: String,
     pub title: String,
 }
