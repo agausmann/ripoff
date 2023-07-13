@@ -89,7 +89,7 @@ fn main() -> anyhow::Result<()> {
             let catalog_number = release
                 .label_info
                 .get(0)
-                .map(|label| label.catalog_number.as_str())
+                .and_then(|label| label.catalog_number.as_deref())
                 .unwrap_or("");
             let barcode = release.barcode.as_deref().unwrap_or("");
             let artist = release.artist_string();

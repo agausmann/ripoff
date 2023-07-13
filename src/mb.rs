@@ -136,7 +136,7 @@ pub struct CoverArtArchive {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct LabelInfo {
-    pub catalog_number: String,
+    pub catalog_number: Option<String>,
     pub label: Label,
 }
 
