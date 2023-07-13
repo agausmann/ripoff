@@ -52,8 +52,10 @@ impl DiscId {
         let response = client
             .get(&format!("discid/{}?inc={}", disc_id, INCLUDES))
             .call()?
-            .into_json()?;
+            .into_reader();
 
+        let mut jd = serde_json::Deserializer::from_reader(response);
+        let response: Self = serde_path_to_error::deserialize(&mut jd)?;
         Ok(response)
     }
 }
