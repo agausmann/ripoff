@@ -150,7 +150,7 @@ pub struct Label {
     pub name: String,
     pub sort_name: String,
     #[serde(rename = "type")]
-    pub type_: String,
+    pub type_: Option<String>,
     pub type_id: Option<String>,
 }
 
