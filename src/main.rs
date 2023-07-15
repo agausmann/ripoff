@@ -237,6 +237,7 @@ fn main() -> anyhow::Result<()> {
         } else {
             format!("{:02} {}.flac", track_num, mb_track_info.title)
         };
+        let file_name = path_sanitizer.map(&file_name);
 
         println!();
         println!(
