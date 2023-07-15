@@ -101,6 +101,12 @@ impl Release {
             .flat_map(|credit| [credit.name.as_str(), credit.joinphrase.as_str()])
             .collect()
     }
+
+    pub(crate) fn catalog_number(&self) -> Option<&str> {
+        self.label_info
+            .get(0)
+            .and_then(|label| label.catalog_number.as_deref())
+    }
 }
 
 #[derive(Debug, Deserialize)]

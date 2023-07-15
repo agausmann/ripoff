@@ -1,6 +1,7 @@
 pub mod mb;
 
 use std::{
+    collections::HashSet,
     ffi::{c_int, c_long, CString},
     io::SeekFrom,
     path::PathBuf,
@@ -77,12 +78,62 @@ fn main() -> anyhow::Result<()> {
 
     let mb_client = mb::Client::new();
     let mb_info = mb::DiscId::lookup(&mb_client, &disc_id)?;
-    if mb_info.releases.is_empty() {
-        bail!("No release found with this MBID. Please submit it to the database.");
+
+    let mut releases = mb_info.releases;
+    if releases.is_empty() {
+        bail!("No release found for this Disc ID. Please submit it to the database.");
     }
 
-    let release_summaries: Vec<String> = mb_info
-        .releases
+    let console_theme = ColorfulTheme::default();
+
+    const DISAMBIGUATIONS: &[(&str, fn(&mb::Release) -> Option<String>)] = &[
+        ("album", |release| {
+            Some(format!("{} - {}", release.artist_string(), release.title))
+        }),
+        ("catalog number", |release| {
+            release.catalog_number().map(str::to_string)
+        }),
+        ("barcode", |release| release.barcode.clone()),
+        ("packaging", |release: &mb::Release| {
+            release.packaging.clone()
+        }),
+        ("MBID", |release| Some(release.id.to_string())),
+    ];
+
+    for &(disambiguation, mapper) in DISAMBIGUATIONS {
+        if releases.len() == 1 {
+            break;
+        }
+
+        let choices_set: HashSet<Option<String>> = releases.iter().map(mapper).collect();
+
+        let mut choices: Vec<String> = choices_set
+            .iter()
+            .flat_map(|option| option.clone())
+            .collect();
+        // If "Other" is required, always append to the end of the list of choices.
+        if choices_set.contains(&None) {
+            choices.push("Other".to_string());
+        }
+
+        // Ignore disambiguations that aren't useful.
+        if choices.len() < 2 {
+            continue;
+        }
+
+        let choice_index = Select::with_theme(&console_theme)
+            .with_prompt(format!("Confirm {}:", disambiguation))
+            .items(&choices)
+            .interact()?;
+
+        releases.retain(|release| {
+            let value = mapper(release);
+            value.map(|s| s == choices[choice_index]).unwrap_or(true)
+        });
+    }
+
+    // Confirm selection from remaining releases:
+    let release_summaries: Vec<String> = releases
         .iter()
         .map(|release| {
             let mbid = &release.id;
@@ -105,13 +156,11 @@ fn main() -> anyhow::Result<()> {
         })
         .collect();
 
-    let console_theme = ColorfulTheme::default();
-
     let selected_index = Select::with_theme(&console_theme)
         .with_prompt("Confirm release:")
         .items(&release_summaries)
         .interact()?;
-    let selected_release = &mb_info.releases[selected_index];
+    let selected_release = &releases[selected_index];
     let multi_disc = selected_release.media.len() > 1;
     let mb_disc_info = selected_release
         .media
