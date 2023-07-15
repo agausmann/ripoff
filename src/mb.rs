@@ -151,7 +151,7 @@ pub struct Label {
     pub sort_name: String,
     #[serde(rename = "type")]
     pub type_: String,
-    pub type_id: String,
+    pub type_id: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
