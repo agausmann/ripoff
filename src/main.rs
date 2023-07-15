@@ -75,6 +75,7 @@ fn main() -> anyhow::Result<()> {
 
     println!("Disc ID: {:?}", disc_id);
     println!("TOC: {:?}", toc);
+    println!("Submit via: {}", disc_info.submission_url());
 
     let mb_client = mb::Client::new();
     let mb_info = mb::DiscId::lookup(&mb_client, &disc_id)?;
